@@ -20,7 +20,7 @@ document.getElementById('startButton').addEventListener('click', function () {
       // Запуск третьего звука через случайный интервал
       timeoutId = setTimeout(() => {
         sound3.play();
-      }, getRandomTime(1000, 2000)); // от 1 до 2 секунд для третьего звука
+      }, getRandomTime(1500, 2000)); // от 1.5 до 2 секунд для третьего звука
     }, getRandomTime(500, 2000)); // от 0.5 до 2 секунд для второго звука
   }, 5000); // Первый звук через 5 секунд
 });
