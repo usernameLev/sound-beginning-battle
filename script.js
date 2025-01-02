@@ -3,11 +3,19 @@ const sound2 = document.getElementById('sound2');
 const sound3 = document.getElementById('sound3');
 let timeoutId; // Переменная для хранения идентификатора таймера
 
-document.getElementById('startButton').addEventListener('click', function () {
-  // Функция для генерации случайного времени
-  function getRandomTime(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+// Получаем кнопки
+const startButton = document.getElementById('startButton');
+const stopButton = document.getElementById('stopButton');
+
+// Функция для генерации случайного времени
+function getRandomTime(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Обработчик события для кнопки "Начать бой!"
+startButton.addEventListener('click', function () {
+  // Блокируем кнопку "Начать бой!"
+  startButton.disabled = true;
 
   // Запуск первого звука через 5 секунд
   timeoutId = setTimeout(() => {
@@ -25,7 +33,8 @@ document.getElementById('startButton').addEventListener('click', function () {
   }, 5000); // Первый звук через 5 секунд
 });
 
-document.getElementById('stopButton').addEventListener('click', function () {
+// Обработчик события для кнопки "Стоп!"
+stopButton.addEventListener('click', function () {
   clearTimeout(timeoutId); // Остановка генерации звуков
 
   // Остановка воспроизведения всех звуков
@@ -37,4 +46,7 @@ document.getElementById('stopButton').addEventListener('click', function () {
   sound1.currentTime = 0;
   sound2.currentTime = 0;
   sound3.currentTime = 0;
+
+  // Разблокируем кнопку "Начать бой!"
+  startButton.disabled = false;
 });
