@@ -36,7 +36,7 @@ startButton.addEventListener('click', function () {
         sound3.play();
         
         // После завершения всех действий разблокируем кнопку
-        isFighting = false; // Сбрасываем флаг
+        isFighting = false; // Сбрасываем флаг боя
         startButton.disabled = false; // Разблокируем кнопку "Начать бой!"
       }, getRandomTime(1500, 2000)); // от 1.5 до 2 секунд для третьего звука
     }, getRandomTime(500, 2000)); // от 0.5 до 2 секунд для второго звука
@@ -59,5 +59,5 @@ stopButton.addEventListener('click', function () {
 
   // Разблокируем кнопку "Начать бой!" и сбрасываем флаг
   isFighting = false;
-  startButton.disabled = false;
+  startButton.disabled = false; // Разблокировка кнопки после остановки боя
 });
