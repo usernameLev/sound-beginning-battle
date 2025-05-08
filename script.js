@@ -1,47 +1,53 @@
 const sound1 = document.getElementById('sound1');
 const sound2 = document.getElementById('sound2');
 const sound3 = document.getElementById('sound3');
-let timeoutId1, timeoutId2, timeoutId3;
+
+let timeoutId;
 let isFighting = false;
 
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 
-// Функция для случайного времени
+let audioUnlocked = false;
+
 function getRandomTime(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// Разблокировка аудио через AudioContext (если нужно)
-let audioContext;
-function unlockAudioContext() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
-  }
+function unlockAudio() {
+  if (audioUnlocked) return;
+
+  [sound1, sound2, sound3].forEach((sound) => {
+    sound.play()
+      .then(() => {
+        sound.pause();
+        sound.currentTime = 0;
+      })
+      .catch((err) => {
+        console.warn('Audio unlock error:', err);
+      });
+  });
+
+  audioUnlocked = true;
 }
 
-// Функция запуска последовательного проигрывания звуков
 function startFight() {
   if (isFighting) return;
+
+  unlockAudio(); // Убедимся, что звук разблокирован
 
   isFighting = true;
   startButton.disabled = true;
 
-  unlockAudioContext();
+  timeoutId = setTimeout(() => {
+    sound1.play().catch(console.warn);
 
-  // Проигрываем первый звук сразу (важно для мобильных)
-  sound1.play().catch(console.warn);
+    timeoutId = setTimeout(() => {
+      sound2.play().catch(console.warn);
 
-  timeoutId1 = setTimeout(() => {
-    sound2.play().catch(console.warn);
+      timeoutId = setTimeout(() => {
+        sound3.play().catch(console.warn);
 
-    timeoutId2 = setTimeout(() => {
-      sound3.play().catch(console.warn);
-
-      timeoutId3 = setTimeout(() => {
         isFighting = false;
         startButton.disabled = false;
       }, getRandomTime(1500, 2000));
@@ -49,15 +55,8 @@ function startFight() {
   }, 5000);
 }
 
-startButton.addEventListener('click', () => {
-  unlockAudioContext();
-  startFight();
-});
-
-stopButton.addEventListener('click', () => {
-  clearTimeout(timeoutId1);
-  clearTimeout(timeoutId2);
-  clearTimeout(timeoutId3);
+function stopFight() {
+  clearTimeout(timeoutId);
 
   [sound1, sound2, sound3].forEach((sound) => {
     sound.pause();
@@ -66,4 +65,8 @@ stopButton.addEventListener('click', () => {
 
   isFighting = false;
   startButton.disabled = false;
-});
+}
+
+// Привязка событий
+startButton.addEventListener('click', startFight);
+stopButton.addEventListener('click', stopFight);
