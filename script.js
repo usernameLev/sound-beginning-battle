@@ -1,72 +1,63 @@
 const sound1 = document.getElementById('sound1');
 const sound2 = document.getElementById('sound2');
 const sound3 = document.getElementById('sound3');
+let timeoutId; // Переменная для хранения идентификатора таймера
+let isFighting = false; // Флаг для отслеживания состояния боя
 
-let timeoutId;
-let isFighting = false;
-
+// Получаем кнопки
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 
-let audioUnlocked = false;
-
+// Функция для генерации случайного времени
 function getRandomTime(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function unlockAudio() {
-  if (audioUnlocked) return;
+// Обработчик события для кнопки "Начать бой!"
+startButton.addEventListener('click', function () {
+  if (isFighting) return; // Если уже идет бой, выходим из функции
 
-  [sound1, sound2, sound3].forEach((sound) => {
-    sound.play()
-      .then(() => {
-        sound.pause();
-        sound.currentTime = 0;
-      })
-      .catch((err) => {
-        console.warn('Audio unlock error:', err);
-      });
-  });
-
-  audioUnlocked = true;
-}
-
-function startFight() {
-  if (isFighting) return;
-
-  unlockAudio(); // Убедимся, что звук разблокирован
-
+  // Устанавливаем флаг, что бой начался
   isFighting = true;
+
+  // Блокируем кнопку "Начать бой!"
   startButton.disabled = true;
 
+  // Запуск первого звука через 5 секунд
   timeoutId = setTimeout(() => {
-    sound1.play().catch(console.warn);
+    sound1.play();
 
+    // Запуск второго звука через случайный интервал
     timeoutId = setTimeout(() => {
-      sound2.play().catch(console.warn);
+      sound2.play();
 
+      // Запуск третьего звука через случайный интервал
       timeoutId = setTimeout(() => {
-        sound3.play().catch(console.warn);
+        sound3.play();
 
-        isFighting = false;
-        startButton.disabled = false;
-      }, getRandomTime(1500, 2000));
-    }, getRandomTime(500, 2000));
-  }, 5000);
-}
+        // После завершения всех действий разблокируем кнопку
+        isFighting = false; // Сбрасываем флаг боя
+        startButton.disabled = false; // Разблокируем кнопку "Начать бой!"
+      }, getRandomTime(1500, 2000)); // от 1.5 до 2 секунд для третьего звука
+    }, getRandomTime(500, 2000)); // от 0.5 до 2 секунд для второго звука
+  }, 5000); // Первый звук через 5 секунд
+});
 
-function stopFight() {
-  clearTimeout(timeoutId);
+// Обработчик события для кнопки "Стоп!"
+stopButton.addEventListener('click', function () {
+  clearTimeout(timeoutId); // Остановка генерации звуков
 
-  [sound1, sound2, sound3].forEach((sound) => {
-    sound.pause();
-    sound.currentTime = 0;
-  });
+  // Остановка воспроизведения всех звуков
+  sound1.pause();
+  sound2.pause();
+  sound3.pause();
 
+  // Сброс времени воспроизведения всех звуков
+  sound1.currentTime = 0;
+  sound2.currentTime = 0;
+  sound3.currentTime = 0;
+
+  // Разблокируем кнопку "Начать бой!" и сбрасываем флаг
   isFighting = false;
-  startButton.disabled = false;
-}
-
-// Привязка событий
-startButton.addEventListener('click', startFight);
-stopButton.addEventListener('click', stopFight);
+  startButton.disabled = false; // Разблокировка кнопки после остановки боя
+});
